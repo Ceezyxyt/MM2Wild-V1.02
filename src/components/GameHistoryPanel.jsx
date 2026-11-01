@@ -170,11 +170,13 @@ export default function GameHistoryPanel() {
         game: selectedFilter.id,
       });
       const response = await fetch(`/api/bets?${params}`);
+      const payload = await response.json().catch(() => null);
       if (!response.ok) {
-        const payload = await response.json().catch(() => null);
         throw new Error(payload?.error || "Could not load bet history.");
       }
-      const payload = await response.json();
+      if (!payload || typeof payload !== "object") {
+        throw new Error("The bet history service returned an invalid response.");
+      }
       setBets(payload.bets || []);
       setTotal(payload.total || 0);
       setTotalPages(payload.totalPages || 1);

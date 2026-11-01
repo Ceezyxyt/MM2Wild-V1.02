@@ -56,6 +56,13 @@ function apiMiddleware(backendEnv) {
         }),
         backendEnv,
       );
+      const contentType = backendResponse.headers.get("content-type") || "";
+      if (!contentType.toLowerCase().includes("application/json")) {
+        sendJson(response, 502, {
+          error: "The API backend returned an invalid response.",
+        });
+        return;
+      }
       response.statusCode = backendResponse.status;
       backendResponse.headers.forEach((value, name) => {
         response.setHeader(name, value);

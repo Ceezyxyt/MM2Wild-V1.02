@@ -237,11 +237,13 @@ export default function TransactionsPanel() {
         method: selectedFilter.id,
       });
       const response = await fetch(`/api/transactions?${params}`);
+      const payload = await response.json().catch(() => null);
       if (!response.ok) {
-        const payload = await response.json().catch(() => null);
         throw new Error(payload?.error || "Could not load transaction history.");
       }
-      const payload = await response.json();
+      if (!payload || typeof payload !== "object") {
+        throw new Error("The transaction service returned an invalid response.");
+      }
       setTransactions(payload.transactions || []);
       setTotal(payload.total || 0);
       setTotalPages(payload.totalPages || 1);

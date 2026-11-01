@@ -54,11 +54,13 @@ export default function SecurityPanel() {
     try {
       const params = new URLSearchParams({ page: String(page), perPage: String(perPage) });
       const response = await fetch(`/api/sessions?${params}`);
+      const payload = await response.json().catch(() => null);
       if (!response.ok) {
-        const payload = await response.json().catch(() => null);
         throw new Error(payload?.error || "Could not load sessions.");
       }
-      const payload = await response.json();
+      if (!payload || typeof payload !== "object") {
+        throw new Error("The sessions service returned an invalid response.");
+      }
       setSessions(payload.sessions || []);
       setTotal(payload.total || 0);
       setTotalPages(payload.totalPages || 1);

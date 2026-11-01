@@ -9,11 +9,14 @@ async function requestFairnessData(force = false) {
 
   fairnessDataRequest = fetch("/api/fairness")
     .then(async (response) => {
+      const payload = await response.json().catch(() => null);
       if (!response.ok) {
-        const payload = await response.json().catch(() => null);
         throw new Error(payload?.error || "Could not load fairness data.");
       }
-      return response.json();
+      if (!payload || typeof payload !== "object") {
+        throw new Error("The fairness service returned an invalid response.");
+      }
+      return payload;
     })
     .then((payload) => {
       cachedFairnessData = payload;
