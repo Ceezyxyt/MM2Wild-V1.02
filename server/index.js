@@ -236,16 +236,20 @@ async function getRobloxUser(request) {
   const user = (await userResponse.json()).data?.[0];
   if (!user) return json({ error: "Roblox user not found." }, 404);
 
+  let avatarUrl = null;
   try {
-    return json({
-      id: user.id,
-      name: user.name,
-      displayName: user.displayName,
-      avatarUrl: await getRobloxAvatar(user.id),
-    });
-  } catch (error) {
-    return json({ error: error.message }, 502);
+    avatarUrl = await getRobloxAvatar(user.id);
+  } catch {
+    // Roblox thumbnails can lag behind username lookups. The account can still
+    // be verified and the UI will use its normal avatar fallback.
   }
+
+  return json({
+    id: user.id,
+    name: user.name,
+    displayName: user.displayName,
+    avatarUrl,
+  });
 }
 
 async function getVerificationPhrase(request, env) {
