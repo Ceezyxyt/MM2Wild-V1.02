@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import TripleGreenJackpotModal from "../components/TripleGreenJackpotModal";
 import RouletteResultModal from "../components/RouletteResultModal";
+import { readApiJson } from "../lib/apiResponse";
 const COLORS = [
   { id: "blue", label: "BLUE", multiplier: 2, gradient: "radial-gradient(50% 50%, rgb(91, 119, 246) 0%, rgb(65, 81, 218) 100%)", linearGradient: "linear-gradient(90deg, rgb(91, 119, 246) 0%, rgb(65, 81, 218) 100%)", shadow: "rgb(11, 36, 146)", text: "#7CB0FF", rgb: "91,119,246" },
   { id: "green", label: "GREEN", multiplier: 14, gradient: "radial-gradient(50% 50%, rgb(92, 223, 154) 0%, rgb(15, 195, 101) 100%)", linearGradient: "linear-gradient(90deg, rgb(92, 223, 154) 0%, rgb(15, 195, 101) 100%)", shadow: "rgb(11, 146, 76)", text: "#5CDF9A", rgb: "92,223,154" },
@@ -287,7 +288,7 @@ export default function Roulette({ balanceType = "mm2" }) {
   useEffect(() => {
     let disposed = false;
     fetch("/api/session", { credentials: "include" })
-      .then((r) => (r.ok ? r.json() : null))
+      .then((r) => (r.ok ? rreadApiJson(r) : null))
       .then((data) => {
         if (!disposed && data?.user) {
           setBalance(Number(data.user[balanceType === "crypto" ? "crypto_balance" : "mm2_balance"] || 0));
@@ -570,7 +571,7 @@ export default function Roulette({ balanceType = "mm2" }) {
             setJackpotGreenStreak(Number(payload.jackpot.greenStreak || 0));
           }
           fetch("/api/session", { credentials: "include" })
-            .then((r) => (r.ok ? r.json() : null))
+            .then((r) => (r.ok ? rreadApiJson(r) : null))
             .then((data) => {
               if (data?.user) setBalance(Number(data.user[balanceType === "crypto" ? "crypto_balance" : "mm2_balance"] || 0));
             })
