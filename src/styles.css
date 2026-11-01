@@ -11,10 +11,10 @@
 
 @theme inline {
   --breakpoint-xs: 20rem;
-  --color-primary: #f3b239;
-  --color-accent: #a7bff5;
-  --color-accent-light: #d9e5ff;
-  --color-background: #0d1429;
+  --color-primary: #ef4444;
+  --color-accent: #f87171;
+  --color-accent-light: #fecaca;
+  --color-background: #1f0b12;
   --color-success: #5bffa8;
   --color-error: #fc5c5b;
   --color-foreground: #fff;
@@ -26,15 +26,15 @@
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
-  --color-primary: #f3b239;
-  --color-surface-hover: #aeaeae;
-  --color-accent: #a7bff5;
-  --color-accent-foreground: #0d1b24;
-  --color-accent-light: #d9e5ff;
+  --color-primary: #ef4444;
+  --color-surface-hover: #7f1d2d;
+  --color-accent: #f87171;
+  --color-accent-foreground: #2a0b12;
+  --color-accent-light: #fecaca;
   --color-muted: #6b7280;
-  --color-muted-foreground: #9ca3af;
-  --color-border: #374151;
-  --color-ring: #1475e1;
+  --color-muted-foreground: #d1a1aa;
+  --color-border: #5b2634;
+  --color-ring: #ef4444;
   --color-success: #5bffa8;
   --color-warning: #ffa553;
   --color-error: #fc5c5b;

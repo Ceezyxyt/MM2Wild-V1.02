@@ -347,7 +347,13 @@ async function verifyRobloxBio(request, env) {
 
   try {
     const profile = await getRobloxProfile(userId);
-    const account = await upsertMM2WildUser(env, profile, await getRobloxAvatar(profile.id));
+    let avatarUrl = null;
+    try {
+      avatarUrl = await getRobloxAvatar(profile.id);
+    } catch {
+      // Roblox thumbnails may lag behind a valid user lookup; keep the account usable.
+    }
+    const account = await upsertMM2WildUser(env, profile, avatarUrl);
     const now = Math.floor(Date.now() / 1000);
     const session = await createSignedToken(
       { type: "session", uuid: account.uuid, robloxUserId: String(profile.id), iat: now, exp: now + sessionLifetimeSeconds },

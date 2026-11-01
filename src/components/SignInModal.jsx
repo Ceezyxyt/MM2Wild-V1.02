@@ -264,7 +264,7 @@ export default function SignInModal({ onClose, onSignedIn }) {
         `/api/roblox-user?username=${encodeURIComponent(username.trim())}`,
       );
       const payload = await readApiJson(response);
-      if (!response.ok || !payload.avatarUrl) {
+      if (!response.ok || !payload.id || !payload.name) {
         throw new Error(payload.error || "Roblox user could not be loaded.");
       }
 

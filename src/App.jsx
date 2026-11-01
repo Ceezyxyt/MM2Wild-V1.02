@@ -177,7 +177,7 @@ export default function App() {
 
   return (
     <>
-      <div className="app-background fixed inset-0 size-full bg-linear-to-br from-[#131C2F] to-[#212A53] z-0" />
+      <div className="app-background fixed inset-0 size-full bg-linear-to-br from-[#240b13] to-[#5b1424] z-0" />
       <main className="relative z-1">
         <Header
           onInitialRenderReady={markHeaderReady}
@@ -225,7 +225,7 @@ export default function App() {
         </div>
         {isPageLoading && (
           <div
-            className="fixed right-0 bottom-0 z-50 bg-linear-to-br from-[#131C2F] to-[#212A53] flex items-center justify-center"
+            className="fixed right-0 bottom-0 z-50 bg-linear-to-br from-[#240b13] to-[#5b1424] flex items-center justify-center"
             style={{ top: "var(--layout-top, 120px)", left: "var(--layout-left, 0px)" }}
           >
             <LineWobbleLoader />
