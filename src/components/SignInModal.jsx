@@ -223,7 +223,7 @@ export default function SignInModal({ onClose, onSignedIn }) {
         const response = await fetch(
           `/api/verification-phrase?userId=${encodeURIComponent(resolvedUser.id)}`,
         );
-        const payload = await response.json();
+        const payload = await readApiJson(response);
         if (
           !response.ok ||
           typeof payload.phrase !== "string" ||
@@ -263,7 +263,7 @@ export default function SignInModal({ onClose, onSignedIn }) {
       const response = await fetch(
         `/api/roblox-user?username=${encodeURIComponent(username.trim())}`,
       );
-      const payload = await response.json();
+      const payload = await readApiJson(response);
       if (!response.ok || !payload.avatarUrl) {
         throw new Error(payload.error || "Roblox user could not be loaded.");
       }
@@ -295,7 +295,7 @@ export default function SignInModal({ onClose, onSignedIn }) {
           challenge: verificationChallenge,
         }),
       });
-      const payload = await response.json();
+      const payload = await readApiJson(response);
 
       if (!response.ok || payload.verified !== true || !payload.user) {
         throw new Error(
