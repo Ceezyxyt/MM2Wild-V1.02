@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { readApiJson } from "../lib/apiResponse"
 import { flushSync } from "react-dom";
 
 const ITEM_SIZE = 136;
@@ -306,8 +307,8 @@ export default function CaseOpen({ slug, balanceType = "mm2" }) {
     const controller = new AbortController();
     setLoading(true);
     Promise.all([
-      fetch(`/api/cases/${encodeURIComponent(slug)}`, { signal: controller.signal }).then(async (response) => { const payload = await response.json().catch(() => null); if (!response.ok) throw new Error(payload?.error || "Case not found."); return payload.case; }),
-      fetch("/api/session", { signal: controller.signal }).then(async (response) => response.ok ? (await response.json()).user : null),
+      fetch(`/api/cases/${encodeURIComponent(slug)}`, { signal: controller.signal }).then(async (response) => { const payload = await readApiJson(response).catch(() => null); if (!response.ok) throw new Error(payload?.error || "Case not found."); return payload.case; }),
+      fetch("/api/session", { signal: controller.signal }).then(async (response) => response.ok ? (await readApiJson(response)).user : null),
     ]).then(([loadedCase, sessionUser]) => {
       setCaseItem(loadedCase);
       setUser(sessionUser);
@@ -357,7 +358,7 @@ export default function CaseOpen({ slug, balanceType = "mm2" }) {
     const audioPreparation = prepareCaseAudio();
     try {
       const response = await fetch(`/api/cases/${encodeURIComponent(slug)}/open`, { method: "POST", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify({ quantity, demo, balanceType }) });
-      const payload = await response.json().catch(() => null);
+      const payload = await readApiJson(response).catch(() => null);
       if (!response.ok) throw new Error(payload?.error || "The case could not be opened.");
       const opening = payload.opening;
       const { multi, winnerIndex: landingIndex } = reelConfig(quantity, fastSpin);

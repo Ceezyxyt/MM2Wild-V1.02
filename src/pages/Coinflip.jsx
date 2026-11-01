@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal, flushSync } from "react-dom";
+import { readApiJson } from "../lib/apiResponse";
 import LineWobbleLoader from "../components/LineWobbleLoader";
 import CoinflipCreateModal, { preloadCoinflipItems } from "../components/CoinflipCreateModal";
 import CoinflipViewModal from "../components/CoinflipViewModal";
@@ -1363,7 +1364,7 @@ export default function Coinflip({ balanceType = "mm2" }) {
 
   const loadGames = useCallback(async () => {
     const response = await fetch("/api/coinflip?limit=100", { credentials: "include" });
-    const data = await response.json();
+    const data = await readApiJson(response);
     if (!response.ok) throw new Error(data.error || "Could not load coinflips.");
     const nextGames = data.games || [];
     if (statusesInitializedRef.current) {
@@ -1398,7 +1399,7 @@ export default function Coinflip({ balanceType = "mm2" }) {
       const response = await fetch("/api/coinflip", {
         method: "POST", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify(payload),
       });
-      const data = await response.json();
+      const data = await readApiJson(response);
       if (!response.ok) throw new Error(data.error || "The coinflip could not be updated.");
       const usedBalanceType = data.balanceType || payload.balanceType;
       setCurrentUser((user) => user ? { ...user, [usedBalanceType === "crypto" ? "crypto_balance" : "mm2_balance"]: Number(data.balance) } : user);
@@ -1421,7 +1422,7 @@ export default function Coinflip({ balanceType = "mm2" }) {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ action: "callBot", gameId: game.id, balanceType: game.balanceType || balanceType }),
       });
-      const data = await response.json();
+      const data = await readApiJson(response);
       if (!response.ok) throw new Error(data.error || "The bot could not join this coinflip.");
       const usedBalanceType = data.balanceType || game.balanceType || balanceType;
       setCurrentUser((user) => user ? { ...user, [usedBalanceType === "crypto" ? "crypto_balance" : "mm2_balance"]: Number(data.balance) } : user);
@@ -1483,7 +1484,7 @@ export default function Coinflip({ balanceType = "mm2" }) {
     let disposed = false;
     Promise.all([
       loadGames(),
-      fetch("/api/session", { credentials: "include" }).then(async (response) => response.ok ? (await response.json()).user : null),
+      fetch("/api/session", { credentials: "include" }).then(async (response) => response.ok ? (await readApiJson(response)).user : null),
     ]).then(([, user]) => { if (!disposed) setCurrentUser(user); }).catch((requestError) => { if (!disposed) setError(requestError.message); }).finally(() => { if (!disposed) setIsLoading(false); });
     const refreshTimer = window.setInterval(() => loadGames().catch(() => {}), 2500);
     return () => { disposed = true; window.clearInterval(refreshTimer); };
@@ -1499,7 +1500,7 @@ export default function Coinflip({ balanceType = "mm2" }) {
       }
       try {
         const response = await fetch("/api/session", { credentials: "include", signal: controller.signal });
-        const payload = await response.json().catch(() => null);
+        const payload = await readApiJson(response).catch(() => null);
         if (response.ok && payload?.user) setCurrentUser(payload.user);
       } catch {
       }

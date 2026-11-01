@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { readApiJson } from "../lib/apiResponse";
 
 const rarityDefinitions = {
   ancient: { label: "Ancient", color: "#5C17DE" },
@@ -45,7 +46,7 @@ export function preloadCoinflipItems() {
   if (!coinflipItemsRequest) {
     coinflipItemsRequest = fetch("/api/coinflip/items", { credentials: "include" })
       .then(async (response) => {
-        const data = await response.json();
+        const data = await readApiJson(response);
         if (!response.ok) throw new Error(data.error || "Could not load items.");
         cachedCoinflipItems = data.items || [];
         cachedCoinflipItems.slice(0, 24).forEach((item) => {
