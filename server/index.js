@@ -227,14 +227,52 @@ async function getRobloxUser(request) {
     return json({ error: "Enter a valid Roblox username." }, 400);
   }
 
-  const userResponse = await fetch("https://users.roblox.com/v1/usernames/users", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ usernames: [username], excludeBannedUsers: true }),
-  });
-  if (!userResponse.ok) return json({ error: "Roblox is unavailable right now." }, 502);
-  const user = (await userResponse.json()).data?.[0];
-  if (!user) return json({ error: "Roblox user not found." }, 404);
+  let userResponse;
+  let user;
+
+  try {
+    userResponse = await fetch("https://users.roblox.com/v1/usernames/users", {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ usernames: [username], excludeBannedUsers: true }),
+    });
+
+    const payload = await userResponse.json();
+    user = payload.data?.[0];
+  } catch {
+    user = null;
+  }
+
+  if (!user) {
+    try {
+      const legacyResponse = await fetch(
+        `https://api.roblox.com/users/get-by-username?username=${encodeURIComponent(username)}`,
+        { headers: { accept: "application/json" } },
+      );
+      if (legacyResponse.ok) {
+        const legacyUser = await legacyResponse.json();
+        if (legacyUser?.Id) {
+          user = {
+            id: legacyUser.Id,
+            name: legacyUser.Username || username,
+            displayName: legacyUser.Username || username,
+          };
+        }
+      }
+    } catch {
+      // Continue with the primary API's status below.
+    }
+  }
+
+  if (!user) {
+    return json(
+      { error: userResponse?.ok ? "Roblox user not found." : "Roblox is unavailable right now." },
+      userResponse?.ok ? 404 : 502,
+    );
+  }
 
   let avatarUrl = null;
   try {
